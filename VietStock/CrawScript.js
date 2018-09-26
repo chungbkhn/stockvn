@@ -33,10 +33,9 @@ function loadKQKD(code, pageNumber, endPageNumber, data, callback) {
     })
 }
 
-function loadPTBCTC() {
+function loadPTBCTC(code) {
     var pageNumber = 1;
     var endPageNumber = 10;
-    var code = 'dha';
     var data = [];
 
     loadCSTC(code, pageNumber, endPageNumber, data, function (dataCSTC) {
@@ -47,10 +46,10 @@ function loadPTBCTC() {
             data = [];
             loadKQKD(code, pageNumber, endPageNumber, data, function (dataKQKD) {
                 util.addDataToExcel(dataKQKD, 'KQKD');
-                util.writeDataToExcel('Excel.xlsx');
+                util.writeDataToExcel('PTBCTC-' + code + '.xlsx');
             })
         })
     })
 }
 
-loadPTBCTC();
+loadPTBCTC('vto');

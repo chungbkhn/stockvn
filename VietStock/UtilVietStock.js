@@ -88,7 +88,7 @@ var util = {
                 });
 
                 // console.log(data);
-                console.log("successed! Get: " + code + "for page: " + pageNumber);
+                console.log("successed! Get: " + code + " for page: " + pageNumber);
                 callback(data);
             }
         });
@@ -149,7 +149,7 @@ var util = {
                     data.push(item);
                 });
 
-                console.log("successed! Get: " + code + "for page: " + pageNumber);
+                console.log("successed! Get: " + code + " for page: " + pageNumber);
                 callback(data);
             }
         });
