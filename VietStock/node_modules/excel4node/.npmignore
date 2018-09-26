@@ -1,0 +1,14 @@
+.idea
+.nyc_output
+.npmrc
+.prettierrc
+.eslintrc.js
+.babelrc
+.travis.yml
+coverage
+docs
+references
+npm-debug.log
+output
+tmp
+*.xlsx
