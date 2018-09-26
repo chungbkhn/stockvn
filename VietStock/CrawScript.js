@@ -27,7 +27,7 @@ request('http://finance.vietstock.vn/Controls/Report/Data/GetReport.ashx?rptType
             xmlMode: true
         });
 
-        var idxColumn = 2;
+        var idxColumn = 1;
         var idxRow = 1;
         $('table thead tr#BR_rowHeader td.BR_colHeader_Time').each(function (i, element){
             const columnName = $(this).text();
@@ -47,6 +47,7 @@ request('http://finance.vietstock.vn/Controls/Report/Data/GetReport.ashx?rptType
             .style(style);
 
             idxColumn = 2;
+
             tr.find('td.BR_tBody_colValue').each(function (sub, subE){
                 // console.log($(this).text());
                 ws.cell(idxRow, idxColumn)
