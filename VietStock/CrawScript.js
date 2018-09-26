@@ -21,11 +21,11 @@ var style = wb.createStyle({
     numberFormat: '$#,##0.00; ($#,##0.00); -',
 });
 
-function loadData(code, pageNumber, endPageNumber, data, callback) {
-    util.combineLoadData(code, pageNumber, data, function(newData) {
+function loadCSTC(code, pageNumber, endPageNumber, data, callback) {
+    util.combineLoadCSTC(code, pageNumber, data, function(newData) {
         pageNumber ++;
         if (pageNumber <= endPageNumber) {
-            loadData(code, pageNumber, endPageNumber, newData, callback);
+            loadCSTC(code, pageNumber, endPageNumber, newData, callback);
         } else {
             callback(newData);
         }
@@ -36,7 +36,7 @@ var pageNumber = 1;
 var endPageNumber = 10;
 var code = 'dha';
 var data = [];
-loadData(code, pageNumber, endPageNumber, data, function(newData) {
+loadCSTC(code, pageNumber, endPageNumber, data, function(newData) {
     for (let row = 0; row < newData.length; row++) {
         const item = newData[row];
         for (let column = 0; column < item.length; column++) {
