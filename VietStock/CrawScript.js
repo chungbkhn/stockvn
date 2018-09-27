@@ -35,7 +35,7 @@ function loadKQKD(code, pageNumber, endPageNumber, data, callback) {
 
 function loadPTBCTC(code) {
     var pageNumber = 1;
-    var endPageNumber = 10;
+    var endPageNumber = 5;
     var data = [];
 
     loadCSTC(code, pageNumber, endPageNumber, data, function (dataCSTC) {
@@ -46,10 +46,10 @@ function loadPTBCTC(code) {
             data = [];
             loadKQKD(code, pageNumber, endPageNumber, data, function (dataKQKD) {
                 util.addDataToExcel(dataKQKD, 'KQKD');
-                util.writeDataToExcel('PTBCTC-' + code + '.xlsx');
+                util.writeDataToExcel('./report/PTBCTC-' + code + '.xlsx');
             })
         })
     })
 }
 
-loadPTBCTC('vto');
+loadPTBCTC('kdh');

@@ -9,18 +9,21 @@ var wb = new xl.Workbook();
 // Add Worksheets to the workbook
 // var ws = wb.addWorksheet('Sheet 1');
 // Create a reusable style
-var style = wb.createStyle({
+var styleNumber = wb.createStyle({
     font: {
         color: '#000000',
         size: 12,
     },
-    numberFormat: '#,##0; (#,##0); -',
+    numberFormat: '#,##; (#,##); -',
 });
-// Set value of cell B1 to 200 as a number type styled with paramaters of style
-// ws.cell(1, 2)
-//   .number(200)
-//   .style(style);
 
+var stylePercent = wb.createStyle({
+    font: {
+        color: '#000000',
+        size: 12,
+    },
+	numberFormat: '#0.##%; (#0.##%); -'
+});
 
 function combineData(oldData, data, index) {
     var result = [];
@@ -189,14 +192,23 @@ var util = {
         var ws = wb.addWorksheet(sheetName);
         for (let row = 0; row < data.length; row++) {
             const item = data[row];
+            var isPercentValue = false;
             for (let column = 0; column < item.length; column++) {
                 const value = item[column];
-                let number = Number(value);
+                var number = Number(value);
                 if (isNaN(number)) {
                     ws.cell(row + 1, column + 1)
                         .string(value)
-                        .style(style);
+                        .style(styleNumber);
+                        if (value == '%') {
+                            isPercentValue = true;
+                        }
                 } else {
+                    var style = styleNumber;
+                    if (isPercentValue) {
+                        style = stylePercent;
+                        number = number / 100.0;
+                    }
                     ws.cell(row + 1, column + 1)
                         .number(number)
                         .style(style);
