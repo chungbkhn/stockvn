@@ -22,7 +22,7 @@ var stylePercent = wb.createStyle({
         color: '#000000',
         size: 12,
     },
-	numberFormat: '#0.##%; (#0.##%); -'
+    numberFormat: '#0.##%; (#0.##%); -'
 });
 
 function combineData(oldData, data, index) {
@@ -132,25 +132,55 @@ var util = {
 
                 data.push(item);
 
-                $('table tbody tr.BR_tBody_rowName').each(function (i, elem) {
-                    var tr = $(this);
-                    var nameRow = tr.find('td.BR_tBody_colName').text();
-
-                    idx = 0;
-                    item = [];
-                    item[idx++] = nameRow;
-
-                    var values = tr.find('span.rpt_chart').first().text().split(',');
-                    for (var i in values) {
-                        let value = values[i];
-                        if (value == '_') {
-                            value = '';
+                if (type == 'LC') {
+                    let trs = $('table tbody').children();
+                    var startCalculate = false;
+                    for (const tr in trs) {
+                        if (trs.attr('id') == 'BR_rowHeader') {
+                            startCalculate = true;
+                            continue;
                         }
-                        item[idx++] = value;
-                    }
 
-                    data.push(item);
-                });
+                        if (startCalculate) {
+                            var nameRow = tr.find('td.BR_tBody_colName').text();
+
+                        idx = 0;
+                        item = [];
+                        item[idx++] = nameRow;
+
+                        var values = tr.find('span.rpt_chart').first().text().split(',');
+                        for (var i in values) {
+                            let value = values[i];
+                            if (value == '_') {
+                                value = '';
+                            }
+                            item[idx++] = value;
+                        }
+
+                        data.push(item);
+                        }
+                    }
+                } else {
+                    $('table tbody tr.BR_tBody_rowName').each(function (i, elem) {
+                        var tr = $(this);
+                        var nameRow = tr.find('td.BR_tBody_colName').text();
+
+                        idx = 0;
+                        item = [];
+                        item[idx++] = nameRow;
+
+                        var values = tr.find('span.rpt_chart').first().text().split(',');
+                        for (var i in values) {
+                            let value = values[i];
+                            if (value == '_') {
+                                value = '';
+                            }
+                            item[idx++] = value;
+                        }
+
+                        data.push(item);
+                    });
+                }
 
                 console.log("successed! Get: " + code + " for page: " + pageNumber);
                 callback(data);
@@ -184,11 +214,11 @@ var util = {
             }
         });
     },
-    writeDataToExcel: function(name) {
+    writeDataToExcel: function (name) {
         wb.write(name);
         console.log('Write data successful!');
     },
-    addDataToExcel: function(data, sheetName) {
+    addDataToExcel: function (data, sheetName) {
         var ws = wb.addWorksheet(sheetName);
         for (let row = 0; row < data.length; row++) {
             const item = data[row];
@@ -200,9 +230,9 @@ var util = {
                     ws.cell(row + 1, column + 1)
                         .string(value)
                         .style(styleNumber);
-                        if (value == '%') {
-                            isPercentValue = true;
-                        }
+                    if (value == '%') {
+                        isPercentValue = true;
+                    }
                 } else {
                     var style = styleNumber;
                     if (isPercentValue) {
@@ -215,7 +245,7 @@ var util = {
                 }
             }
         }
-    
+
         console.log('add data to sheet ' + sheetName + ' successful!');
     }
 };

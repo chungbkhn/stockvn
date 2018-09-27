@@ -33,9 +33,20 @@ function loadKQKD(code, pageNumber, endPageNumber, data, callback) {
     })
 }
 
+function loadLCTT(code, pageNumber, endPageNumber, data, callback) {
+    util.combineLoadLCTT(code, pageNumber, data, function (newData) {
+        pageNumber++;
+        if (pageNumber <= endPageNumber) {
+            loadLCTT(code, pageNumber, endPageNumber, newData, callback);
+        } else {
+            callback(newData);
+        }
+    })
+}
+
 function loadPTBCTC(code) {
     var pageNumber = 1;
-    var endPageNumber = 5;
+    var endPageNumber = 7;
     var data = [];
 
     loadCSTC(code, pageNumber, endPageNumber, data, function (dataCSTC) {
@@ -46,10 +57,15 @@ function loadPTBCTC(code) {
             data = [];
             loadKQKD(code, pageNumber, endPageNumber, data, function (dataKQKD) {
                 util.addDataToExcel(dataKQKD, 'KQKD');
-                util.writeDataToExcel('./report/PTBCTC-' + code + '.xlsx');
+                data = [];
+                loadLCTT(code, pageNumber, endPageNumber, data, function (dataLCTT) {
+                    util.addDataToExcel(dataKQKD, 'LCTT');
+
+                    util.writeDataToExcel('./report/PTBCTC-' + code + '.xlsx');
+                })
             })
         })
     })
 }
 
-loadPTBCTC('kdh');
+loadPTBCTC('vne');
