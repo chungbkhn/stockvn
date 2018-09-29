@@ -196,7 +196,28 @@ var util_craw_vietstock = {
         var listColQ4 = [];
         const listTitle = data[0];
         var newListTitle = [];
+
+        var startUnusedData = 0;
+        var endUnusedData = 0;
         for (let col = 0; col < listTitle.length; col++) {
+            const item = listTitle[col];
+            if (item.length > 0) { 
+                startUnusedData = col;
+                break;
+            }
+        }
+
+        for (let col = 0; col < listTitle.length; col++) {
+            const item = listTitle[col];
+            if (item.indexOf('Quý 1') > -1) { 
+                endUnusedData = col;
+                break;
+            }
+        }
+
+        for (let col = 0; col < listTitle.length; col++) {
+            if (col >= startUnusedData && col < endUnusedData) { continue; }
+
             newListTitle.push(listTitle[col]);
             const items = listTitle[col].split('/');
             if (items.length != 2) { continue };
