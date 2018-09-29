@@ -66,8 +66,7 @@ var util_craw_vietstock = {
                     data.push(item);
                 });
 
-                // console.log(data);
-                console.log("successed! Get: " + code + " for page: " + pageNumber);
+                // console.log("successed! Get: " + code + " for page: " + pageNumber);
                 callback(data);
             }
         });
@@ -158,7 +157,7 @@ var util_craw_vietstock = {
                     });
                 }
 
-                console.log("successed! Get: " + code + " for page: " + pageNumber);
+                // console.log("successed! Get: " + code + " for page: " + pageNumber);
                 callback(data);
             }
         });

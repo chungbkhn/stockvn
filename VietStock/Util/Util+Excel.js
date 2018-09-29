@@ -45,6 +45,10 @@ function rowIndexConstainTitle(title, data) {
 function addRow(title, dataTitle, startColumnData, data, row, ws) {
     addCell(title, row, 1, ws);
     var dataRowIndex = rowIndexWithTitle(dataTitle, data);
+    if (dataRowIndex < 0) { 
+        console.log('Can find row with Title: ' + dataTitle);
+        return; 
+    }
     addRowDataWithStartColumn(startColumnData, data[dataRowIndex], row, 2, ws);
 }
 
@@ -149,6 +153,7 @@ var util_excel = {
         addRow('VCSH', 'I. Vốn chủ sở hữu', startColumnData, data, rowIndex, ws);
 
         // Vốn đầu tư CSH / 1. Vốn góp của chủ sở hữu
+        rowIndex++;
         addRow('Vốn đầu tư CSH', '1. Vốn góp của chủ sở hữu', startColumnData, data, rowIndex, ws);
 
         // Số lượng CP
@@ -164,18 +169,18 @@ var util_excel = {
 
         // Nợ dài hạn / II. Nợ dài hạn 
         rowIndex++;
-        addRow('Nợ dài hạn', 'II. Nợ dài hạn', startColumnData, data, rowIndex, ws);
+        addRowConstainTitle('Nợ dài hạn', 'II. Nợ dài hạn', startColumnData, data, rowIndex, ws);
 
         // Tổng nợ vay
         rowIndex++;
 
         // Nợ vay ngắn hạn / (Vay và nợ thuê tài chính ngắn hạn)
         rowIndex++;
-        rowIndexConstainTitle('Nợ vay ngắn hạn', 'Vay và nợ thuê tài chính ngắn hạn', startColumnData, data, rowIndex, ws);
+        addRowConstainTitle('Nợ vay ngắn hạn', 'Vay và nợ thuê tài chính ngắn hạn', startColumnData, data, rowIndex, ws);
 
         // Nợ vay dài hạn / (Vay và nợ thuê tài chính dài hạn)
         rowIndex++;
-        rowIndexConstainTitle('Nợ vay dài hạn', 'Vay và nợ thuê tài chính dài hạn', startColumnData, data, rowIndex, ws);
+        addRowConstainTitle('Nợ vay dài hạn', 'Vay và nợ thuê tài chính dài hạn', startColumnData, data, rowIndex, ws);
 
         // Tổng tài sản
         rowIndex++;

@@ -8,7 +8,8 @@
             "type": "node",
             "request": "launch",
             "name": "Launch Program",
-            "program": "${workspaceFolder}/VietStock/CrawScript.js"
+            "program": "${workspaceFolder}/VietStock/CrawScript.js",
+            "protocol": "inspector"
         }
     ]
 }
