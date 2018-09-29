@@ -247,6 +247,58 @@ var util = {
         }
 
         console.log('add data to sheet ' + sheetName + ' successful!');
+    },
+    calculateData: function (data, needSumQuater) {
+        if (data.length == 0) { callback(data) };
+
+        var listColQ4 = [];
+        const listTitle = data[0];
+        var newListTitle = [];
+        for (let col = 0; col < listTitle.length; col++) {
+            newListTitle.push(listTitle[col]);
+            const items = listTitle[col].split('/');
+            if (items.length != 2) { continue };
+
+            const quater = items[0];
+            const year = 'Năm ' + items[1];
+            if (quater == 'Quý 4') {
+                listColQ4.push(col);
+                newListTitle.push(year);
+            }
+        }
+
+        var newData = [];
+        newData.push(newListTitle);
+
+        for (let row = 1; row < data.length; row++) {
+            var oldListItem = data[row];
+            var newListItem = [];
+            for (let col = 0; col < oldListItem.length; col++) {
+                const item = oldListItem[col];
+
+                newListItem.push(item);
+                if (listColQ4.indexOf(col) > -1) {
+                    if (needSumQuater) {
+                        var value = oldListItem[col];
+                        if (col >= 3 && listTitle[col - 3].indexOf('Quý 1') > -1) {
+                            value += oldListItem[col - 3];
+                        }
+                        if (col >= 2 && listTitle[col - 2].indexOf('Quý 2') > -1) {
+                            value += oldListItem[col - 2];
+                        }
+                        if (col >= 1 && listTitle[col - 1].indexOf('Quý 3') > -1) {
+                            value += oldListItem[col - 1];
+                        }
+                        newListItem.push(value);
+                    } else {
+                        newListItem.push(item);
+                    }
+                }
+            }
+            newData.push(newListItem);
+        }
+
+        return newData;
     }
 };
 

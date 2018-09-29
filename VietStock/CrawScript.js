@@ -50,16 +50,16 @@ function loadPTBCTC(code) {
     var data = [];
 
     loadCSTC(code, pageNumber, endPageNumber, data, function (dataCSTC) {
-        util.addDataToExcel(dataCSTC, 'CSTC');
+        util.addDataToExcel(util.calculateData(dataCSTC, false), 'CSTC');
         data = [];
         loadCDKT(code, pageNumber, endPageNumber, data, function (dataCDKT) {
-            util.addDataToExcel(dataCDKT, 'CDKT');
+            util.addDataToExcel(util.calculateData(dataCDKT, false), 'CDKT');
             data = [];
             loadKQKD(code, pageNumber, endPageNumber, data, function (dataKQKD) {
-                util.addDataToExcel(dataKQKD, 'KQKD');
+                util.addDataToExcel(util.calculateData(dataKQKD, true), 'KQKD');
                 data = [];
                 loadLCTT(code, pageNumber, endPageNumber, data, function (dataLCTT) {
-                    util.addDataToExcel(dataKQKD, 'LCTT');
+                    util.addDataToExcel(util.calculateData(dataLCTT, false), 'LCTT');
 
                     util.writeDataToExcel('./report/PTBCTC-' + code + '.xlsx');
                 })
