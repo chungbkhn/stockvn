@@ -1,4 +1,5 @@
 var xl = require('excel4node');
+const format = require('string-format');
 
 // Create a new instance of a Workbook class
 var wb = new xl.Workbook();
@@ -64,6 +65,29 @@ function addRowDataWithStartColumn(startIndex, addRowData, row, startCol, ws) {
     var col = startCol;
     for (let idx = startIndex; idx < addRowData.length; idx++) {
         const value = addRowData[idx];
+        addCell(value, row, col, ws);
+        col++;
+    }
+}
+
+function addRowFormula(formualaTemplate, row, startCol, numOfColumnData, ws, style = styleNumber) {
+    for (let idx = startCol; idx < numOfColumnData + startCol; idx++) {
+        const columnName = xl.getExcelAlpha(idx);
+        const formula = format(formualaTemplate, columnName);
+        ws.cell(row, idx)
+        .formula(formula)
+        .style(style);
+    }
+}
+
+function addRowSum(title, dataTitle1, dataTitle2, startColumnData, data, row, ws, style = styleNumber) {
+    addCell(title, row, 1, ws);
+    var dataRowIndex1 = rowIndexConstainTitle(dataTitle1, data);
+    var dataRowIndex2 = rowIndexConstainTitle(dataTitle2, data);
+
+    var col = 2;
+    for (let idx = startColumnData; idx < data[dataRowIndex1].length; idx++) {
+        const value = Number(data[dataRowIndex1][idx]) + Number(data[dataRowIndex2][idx]);
         addCell(value, row, col, ws);
         col++;
     }
@@ -143,6 +167,8 @@ var util_excel = {
             }
         }
 
+        const numOfColumnData = data[0].length - startColumnData;
+
         // Write Row Title
         rowIndex++;
         addCell('', rowIndex, 1, ws);
@@ -152,48 +178,51 @@ var util_excel = {
         rowIndex++;
         addRow('VCSH', 'I. Vốn chủ sở hữu', startColumnData, data, rowIndex, ws);
 
-        // Vốn đầu tư CSH / 1. Vốn góp của chủ sở hữu
-        rowIndex++;
-        addRow('Vốn đầu tư CSH', '1. Vốn góp của chủ sở hữu', startColumnData, data, rowIndex, ws);
-
         // Số lượng CP
         rowIndex++;
+        addCell('Số lượng CP', rowIndex, 1, ws);
+        addRowFormula('{0}6*100',rowIndex, 2, numOfColumnData, ws);
 
         // Nợ phải trả / A. NỢ PHẢI TRẢ
         rowIndex++;
-        addRow('Nợ phải trả', 'A. NỢ PHẢI TRẢ', startColumnData, data, rowIndex, ws);
-
-        // Nợ ngắn hạn / I. Nợ ngắn hạn
-        rowIndex++;
-        addRow('Nợ ngắn hạn', 'I. Nợ ngắn hạn', startColumnData, data, rowIndex, ws);
-
-        // Nợ dài hạn / II. Nợ dài hạn 
-        rowIndex++;
-        addRowConstainTitle('Nợ dài hạn', 'II. Nợ dài hạn', startColumnData, data, rowIndex, ws);
+        addRow('Tổng nợ', 'A. NỢ PHẢI TRẢ', startColumnData, data, rowIndex, ws);
 
         // Tổng nợ vay
         rowIndex++;
-
-        // Nợ vay ngắn hạn / (Vay và nợ thuê tài chính ngắn hạn)
-        rowIndex++;
-        addRowConstainTitle('Nợ vay ngắn hạn', 'Vay và nợ thuê tài chính ngắn hạn', startColumnData, data, rowIndex, ws);
-
-        // Nợ vay dài hạn / (Vay và nợ thuê tài chính dài hạn)
-        rowIndex++;
-        addRowConstainTitle('Nợ vay dài hạn', 'Vay và nợ thuê tài chính dài hạn', startColumnData, data, rowIndex, ws);
+        addRowSum('Tổng nợ vay', 'Vay và nợ thuê tài chính ngắn hạn', 'Vay và nợ thuê tài chính dài hạn', startColumnData, data, rowIndex, ws);
 
         // Tổng tài sản
         rowIndex++;
+        addCell('Tổng tài sản', rowIndex, 1, ws);
+        addRowFormula('{0}6+{0}8',rowIndex, 2, numOfColumnData, ws);
 
         // Chiếm dụng vốn
+        rowIndex++;
+        addCell('Chiếm dụng vốn', rowIndex, 1, ws);
+        addRowFormula('{0}8-{0}9',rowIndex, 2, numOfColumnData, ws);
+
+        // Bị chiếm dụng vốn = (Các khoản phải thu ngắn hạn) + (Các khoản phải thu dài hạn)
+        rowIndex++;
+        addRowSum('Bị chiếm dụng vốn', 'Các khoản phải thu ngắn hạn', 'Các khoản phải thu dài hạn', startColumnData, data, rowIndex, ws);
 
         // Tổng nợ/Tổng TS
+        rowIndex++;
+        addCell('Tổng nợ/Tổng TS', rowIndex, 1, ws);
+        addRowFormula('{0}8/{0}10',rowIndex, 2, numOfColumnData, ws, stylePercent);
 
         // Nợ vay/VCSH
+        rowIndex++;
+        addCell('Nợ vay/VCSH', rowIndex, 1, ws);
+        addRowFormula('{0}9/{0}6',rowIndex, 2, numOfColumnData, ws, stylePercent);
 
         // Tỉ lệ chiếm dụng vốn
+        rowIndex++;
+        addCell('Tỉ lệ chiếm dụng vốn', rowIndex, 1, ws);
+        addRowFormula('{0}11/{0}12',rowIndex, 2, numOfColumnData, ws, stylePercent);
 
         // Cổ tức
+        rowIndex++;
+        addCell('Cổ tức', rowIndex, 1, ws);
     }
 };
 

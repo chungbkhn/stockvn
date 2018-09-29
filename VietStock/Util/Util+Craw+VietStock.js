@@ -236,6 +236,7 @@ var util_craw_vietstock = {
             var oldListItem = data[row];
             var newListItem = [];
             for (let col = 0; col < oldListItem.length; col++) {
+                if (col >= startUnusedData && col < endUnusedData) { continue; }
                 const item = oldListItem[col];
 
                 newListItem.push(item);
