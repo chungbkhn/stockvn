@@ -1,30 +1,6 @@
 var request = require('request');
 const cheerio = require('cheerio');
 
-var xl = require('excel4node');
-
-// Create a new instance of a Workbook class
-var wb = new xl.Workbook();
-
-// Add Worksheets to the workbook
-// var ws = wb.addWorksheet('Sheet 1');
-// Create a reusable style
-var styleNumber = wb.createStyle({
-    font: {
-        color: '#000000',
-        size: 12,
-    },
-    numberFormat: '#,##; (#,##); -',
-});
-
-var stylePercent = wb.createStyle({
-    font: {
-        color: '#000000',
-        size: 12,
-    },
-    numberFormat: '#0.##%; (#0.##%); -'
-});
-
 function combineData(oldData, data, index) {
     var result = [];
     var idx = 0;
@@ -45,7 +21,7 @@ function combineData(oldData, data, index) {
     return result;
 }
 
-var util = {
+var util_craw_vietstock = {
     loadCSTC: function (code, pageNumber, callback) {
         var link = 'http://finance.vietstock.vn/Controls/Report/Data/GetReport.ashx?rptType=CSTC&scode=' + code + '&bizType=1&rptUnit=1000000&rptTermTypeID=2&page=' + pageNumber;
         request(link, function (error, response, body) {
@@ -214,40 +190,6 @@ var util = {
             }
         });
     },
-    writeDataToExcel: function (name) {
-        wb.write(name);
-        console.log('Write data successful!');
-    },
-    addDataToExcel: function (data, sheetName) {
-        var ws = wb.addWorksheet(sheetName);
-        for (let row = 0; row < data.length; row++) {
-            const item = data[row];
-            var isPercentValue = false;
-            for (let column = 0; column < item.length; column++) {
-                const value = item[column];
-                var number = Number(value);
-                if (isNaN(number)) {
-                    ws.cell(row + 1, column + 1)
-                        .string(value)
-                        .style(styleNumber);
-                    if (value == '%') {
-                        isPercentValue = true;
-                    }
-                } else {
-                    var style = styleNumber;
-                    if (isPercentValue) {
-                        style = stylePercent;
-                        number = number / 100.0;
-                    }
-                    ws.cell(row + 1, column + 1)
-                        .number(number)
-                        .style(style);
-                }
-            }
-        }
-
-        console.log('add data to sheet ' + sheetName + ' successful!');
-    },
     calculateData: function (data, needSumQuater) {
         if (data.length == 0) { callback(data) };
 
@@ -302,4 +244,4 @@ var util = {
     }
 };
 
-module.exports = util;
+module.exports = util_craw_vietstock;

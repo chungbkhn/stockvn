@@ -1,7 +1,8 @@
-var util = require('./UtilVietStock.js');
+var util_craw_vietstock = require('./Util/Util+Craw+VietStock.js');
+var util_excel = require('./Util/Util+Excel.js');
 
 function loadCSTC(code, pageNumber, endPageNumber, data, callback) {
-    util.combineLoadCSTC(code, pageNumber, data, function (newData) {
+    util_craw_vietstock.combineLoadCSTC(code, pageNumber, data, function (newData) {
         pageNumber++;
         if (pageNumber <= endPageNumber) {
             loadCSTC(code, pageNumber, endPageNumber, newData, callback);
@@ -12,7 +13,7 @@ function loadCSTC(code, pageNumber, endPageNumber, data, callback) {
 }
 
 function loadCDKT(code, pageNumber, endPageNumber, data, callback) {
-    util.combineLoadCDKT(code, pageNumber, data, function (newData) {
+    util_craw_vietstock.combineLoadCDKT(code, pageNumber, data, function (newData) {
         pageNumber++;
         if (pageNumber <= endPageNumber) {
             loadCDKT(code, pageNumber, endPageNumber, newData, callback);
@@ -23,7 +24,7 @@ function loadCDKT(code, pageNumber, endPageNumber, data, callback) {
 }
 
 function loadKQKD(code, pageNumber, endPageNumber, data, callback) {
-    util.combineLoadKQKD(code, pageNumber, data, function (newData) {
+    util_craw_vietstock.combineLoadKQKD(code, pageNumber, data, function (newData) {
         pageNumber++;
         if (pageNumber <= endPageNumber) {
             loadKQKD(code, pageNumber, endPageNumber, newData, callback);
@@ -34,7 +35,7 @@ function loadKQKD(code, pageNumber, endPageNumber, data, callback) {
 }
 
 function loadLCTT(code, pageNumber, endPageNumber, data, callback) {
-    util.combineLoadLCTT(code, pageNumber, data, function (newData) {
+    util_craw_vietstock.combineLoadLCTT(code, pageNumber, data, function (newData) {
         pageNumber++;
         if (pageNumber <= endPageNumber) {
             loadLCTT(code, pageNumber, endPageNumber, newData, callback);
@@ -50,18 +51,18 @@ function loadPTBCTC(code) {
     var data = [];
 
     loadCSTC(code, pageNumber, endPageNumber, data, function (dataCSTC) {
-        util.addDataToExcel(util.calculateData(dataCSTC, false), 'CSTC');
+        util_excel.addDataToExcel(util_craw_vietstock.calculateData(dataCSTC, false), 'CSTC');
         data = [];
         loadCDKT(code, pageNumber, endPageNumber, data, function (dataCDKT) {
-            util.addDataToExcel(util.calculateData(dataCDKT, false), 'CDKT');
+            util_excel.addDataToExcel(util_craw_vietstock.calculateData(dataCDKT, false), 'CDKT');
             data = [];
             loadKQKD(code, pageNumber, endPageNumber, data, function (dataKQKD) {
-                util.addDataToExcel(util.calculateData(dataKQKD, true), 'KQKD');
+                util_excel.addDataToExcel(util_craw_vietstock.calculateData(dataKQKD, true), 'KQKD');
                 data = [];
                 loadLCTT(code, pageNumber, endPageNumber, data, function (dataLCTT) {
-                    util.addDataToExcel(util.calculateData(dataLCTT, false), 'LCTT');
+                    util_excel.addDataToExcel(util_craw_vietstock.calculateData(dataLCTT, false), 'LCTT');
 
-                    util.writeDataToExcel('./report/PTBCTC-' + code + '.xlsx');
+                    util_excel.writeDataToExcel('./report/PTBCTC-' + code + '.xlsx');
                 })
             })
         })
