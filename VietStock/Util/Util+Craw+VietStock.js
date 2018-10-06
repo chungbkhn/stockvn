@@ -242,15 +242,30 @@ var util_craw_vietstock = {
                 newListItem.push(item);
                 if (listColQ4.indexOf(col) > -1) {
                     if (needSumQuater) {
-                        var value = oldListItem[col];
+                        var value = 0;
+                        var valueQ4 = Number(oldListItem[col]);
+                        if (!isNaN(valueQ4)) {
+                            value += valueQ4;
+                        }
+
                         if (col >= 3 && listTitle[col - 3].indexOf('Quý 1') > -1) {
-                            value += oldListItem[col - 3];
+                            var valueQ3 = Number(oldListItem[col - 3]);
+                        if (!isNaN(valueQ3)) {
+                            value += valueQ3;
+                        }
+                            
                         }
                         if (col >= 2 && listTitle[col - 2].indexOf('Quý 2') > -1) {
-                            value += oldListItem[col - 2];
+                            var valueQ2 = Number(oldListItem[col - 2]);
+                        if (!isNaN(valueQ2)) {
+                            value += valueQ2;
+                        }
                         }
                         if (col >= 1 && listTitle[col - 1].indexOf('Quý 3') > -1) {
-                            value += oldListItem[col - 1];
+                            var valueQ1 = Number(oldListItem[col - 1]);
+                        if (!isNaN(valueQ1)) {
+                            value += valueQ1;
+                        }
                         }
                         newListItem.push(value);
                     } else {

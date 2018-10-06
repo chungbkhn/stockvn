@@ -47,7 +47,7 @@ function loadLCTT(code, pageNumber, endPageNumber, data, callback) {
 
 function loadPTBCTC(code) {
     var pageNumber = 1;
-    var endPageNumber = 7;
+    var endPageNumber = 10;
     var data = [];
 
     loadCSTC(code, pageNumber, endPageNumber, data, function (dataCSTC) {
@@ -62,6 +62,7 @@ function loadPTBCTC(code) {
             loadKQKD(code, pageNumber, endPageNumber, data, function (dataKQKD) {
                 const calculateDataKQKD = util_craw_vietstock.calculateData(dataKQKD, true);
                 util_excel.addDataToExcel(calculateDataKQKD, 'KQKD');
+                util_excel.addDataForPTKQKD(calculateDataKQKD, 'PT - KQKD');
                 data = [];
                 loadLCTT(code, pageNumber, endPageNumber, data, function (dataLCTT) {
                     const calculateDataLCTT = util_craw_vietstock.calculateData(dataLCTT, false);
@@ -74,4 +75,4 @@ function loadPTBCTC(code) {
     })
 }
 
-loadPTBCTC('vne');
+loadPTBCTC('FPT');

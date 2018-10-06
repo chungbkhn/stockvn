@@ -80,6 +80,22 @@ function addRowFormula(formualaTemplate, row, startCol, numOfColumnData, ws, sty
     }
 }
 
+function addRowGFormula(formualaTemplate, row, startCol, numOfColumnData, ws, style = styleNumber) {
+    for (let idx = startCol; idx < numOfColumnData + startCol; idx++) {
+        if (idx < 7) {
+            addCell(0, row, idx, ws);
+            continue;
+        }
+
+        const columnName = xl.getExcelAlpha(idx);
+        const columnNamePrevious = xl.getExcelAlpha(idx - 5);
+        const formula = format(formualaTemplate, columnName, columnNamePrevious);
+        ws.cell(row, idx)
+        .formula(formula)
+        .style(style);
+    }
+}
+
 function addRowSum(title, dataTitle1, dataTitle2, startColumnData, data, row, ws, style = styleNumber) {
     addCell(title, row, 1, ws);
     var dataRowIndex1 = rowIndexConstainTitle(dataTitle1, data);
@@ -223,6 +239,88 @@ var util_excel = {
         // Cổ tức
         rowIndex++;
         addCell('Cổ tức', rowIndex, 1, ws);
+    },
+    addDataForPTKQKD: function (data, sheetName) {
+        if (data.length == 0) { return; }
+
+        var ws = wb.addWorksheet(sheetName);
+        var rowIndex = 1;
+        ws.cell(rowIndex++, 1)   // Write to cell A1
+            .string('KQKD, HIỆU QUẢ VÀ KHẢ NĂNG SINH LỜI')
+            .style(styleNumber);
+
+        ws.cell(rowIndex++, 1)   // Write to cell A2
+            .string('Đơn vị tính')
+            .style(styleNumber);
+
+        ws.cell(rowIndex++, 1)   // Write to cell A3
+            .number(1000000)
+            .style(styleNumber);
+
+        var startColumnData = -1;
+        for (let col = 0; col < data[0].length; col++) {
+            const item = data[0][col];
+            if (item.indexOf('Quý 1') > -1) {
+                startColumnData = col;
+                break;
+            }
+        }
+
+        const numOfColumnData = data[0].length - startColumnData;
+
+        // Write Row Title
+        rowIndex++;
+        addCell('', rowIndex, 1, ws);
+        addRowDataWithStartColumn(startColumnData, data[0], rowIndex, 2, ws);
+
+        // Doanh thu thuần / 3. Doanh thu thuần về bán hàng và cung cấp dịch vụ
+        rowIndex++;
+        addRow('Doanh thu thuần', '3. Doanh thu thuần về bán hàng và cung cấp dịch vụ', startColumnData, data, rowIndex, ws);
+        
+        // LNG / 5. Lợi nhuận gộp về bán hàng và cung cấp dịch vụ
+        rowIndex++;
+        addRow('LNG', '5. Lợi nhuận gộp về bán hàng và cung cấp dịch vụ', startColumnData, data, rowIndex, ws);
+
+        // LNR / 11. Lợi nhuận thuần từ hoạt động kinh doanh
+        rowIndex++;
+        addRow('LNR', '11. Lợi nhuận thuần từ hoạt động kinh doanh', startColumnData, data, rowIndex, ws);
+
+        // LNTT / 15. Tổng lợi nhuận kế toán trước thuế
+        rowIndex++;
+        addRow('LNTT', '15. Tổng lợi nhuận kế toán trước thuế', startColumnData, data, rowIndex, ws);
+
+        // LNST / Lợi nhuận sau thuế của cổ đông của Công ty mẹ
+        rowIndex++;
+        addRow('LNST', 'Lợi nhuận sau thuế của cổ đông của Công ty mẹ', startColumnData, data, rowIndex, ws);
+
+        // EPS / 19. Lãi cơ bản trên cổ phiếu (*) (VNÐ)
+        rowIndex++;
+        addRow('EPS', '19. Lãi cơ bản trên cổ phiếu (*) (VNÐ)', startColumnData, data, rowIndex, ws);
+
+        // Biên LNG
+        rowIndex++;
+        addCell('Biên LNG', rowIndex, 1, ws);
+        addRowFormula('{0}7/{0}6',rowIndex, 2, numOfColumnData, ws, stylePercent);
+
+        // Biên LNR
+        rowIndex++;
+        addCell('Biên LNR', rowIndex, 1, ws);
+        addRowFormula('{0}8/{0}6',rowIndex, 2, numOfColumnData, ws, stylePercent);
+
+        // G DT
+        rowIndex++;
+        addCell('G DT', rowIndex, 1, ws);
+        addRowGFormula('{0}6/{1}6 - 1',rowIndex, 2, numOfColumnData, ws, stylePercent);
+
+        // G LNG
+        rowIndex++;
+        addCell('G LNG', rowIndex, 1, ws);
+        addRowGFormula('{0}7/{1}7 - 1',rowIndex, 2, numOfColumnData, ws, stylePercent);
+
+        // G LNR
+        rowIndex++;
+        addCell('G LNR', rowIndex, 1, ws);
+        addRowGFormula('{0}8/{1}8 - 1',rowIndex, 2, numOfColumnData, ws, stylePercent);
     }
 };
 
