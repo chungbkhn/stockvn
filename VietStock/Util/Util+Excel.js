@@ -155,7 +155,7 @@ var util_excel = {
             }
         }
 
-        console.log('add data to sheet ' + sheetName + ' successful!');
+        console.log('Add data to sheet ' + sheetName + ' successful!');
     },
     addDataForPTCDKT: function (data, sheetName) {
         if (data.length == 0) { return; }
@@ -239,6 +239,8 @@ var util_excel = {
         // Cổ tức
         rowIndex++;
         addCell('Cổ tức', rowIndex, 1, ws);
+
+        console.log('Add data to sheet ' + sheetName + ' successful!');
     },
     addDataForPTKQKD: function (data, sheetName) {
         if (data.length == 0) { return; }
@@ -273,9 +275,9 @@ var util_excel = {
         addCell('', rowIndex, 1, ws);
         addRowDataWithStartColumn(startColumnData, data[0], rowIndex, 2, ws);
 
-        // Doanh thu thuần / 3. Doanh thu thuần về bán hàng và cung cấp dịch vụ
+        // DT thuần / 3. Doanh thu thuần về bán hàng và cung cấp dịch vụ
         rowIndex++;
-        addRow('Doanh thu thuần', '3. Doanh thu thuần về bán hàng và cung cấp dịch vụ', startColumnData, data, rowIndex, ws);
+        addRow('DT thuần', '3. Doanh thu thuần về bán hàng và cung cấp dịch vụ', startColumnData, data, rowIndex, ws);
         
         // LNG / 5. Lợi nhuận gộp về bán hàng và cung cấp dịch vụ
         rowIndex++;
@@ -307,6 +309,11 @@ var util_excel = {
         addCell('Biên LNR', rowIndex, 1, ws);
         addRowFormula('{0}8/{0}6',rowIndex, 2, numOfColumnData, ws, stylePercent);
 
+        // ROE
+        rowIndex++;
+        addCell('ROE', rowIndex, 1, ws);
+        addRowGFormula('{0}8/\'SKTC\'!{1}6',rowIndex, 2, numOfColumnData, ws, stylePercent);
+
         // G DT
         rowIndex++;
         addCell('G DT', rowIndex, 1, ws);
@@ -321,6 +328,59 @@ var util_excel = {
         rowIndex++;
         addCell('G LNR', rowIndex, 1, ws);
         addRowGFormula('{0}8/{1}8 - 1',rowIndex, 2, numOfColumnData, ws, stylePercent);
+
+        console.log('Add data to sheet ' + sheetName + ' successful!');
+    },
+    addDataForPTLCTT: function (data, sheetName) {
+        if (data.length == 0) { return; }
+
+        var ws = wb.addWorksheet(sheetName);
+        var rowIndex = 1;
+        ws.cell(rowIndex++, 1)   // Write to cell A1
+            .string('Dòng tiền')
+            .style(styleNumber);
+
+        ws.cell(rowIndex++, 1)   // Write to cell A2
+            .string('Đơn vị tính')
+            .style(styleNumber);
+
+        ws.cell(rowIndex++, 1)   // Write to cell A3
+            .number(1000000)
+            .style(styleNumber);
+
+        var startColumnData = -1;
+        for (let col = 0; col < data[0].length; col++) {
+            const item = data[0][col];
+            if (item.indexOf('Năm') > -1) {
+                startColumnData = col;
+                break;
+            }
+        }
+
+        const numOfColumnData = data[0].length - startColumnData;
+
+        // Write Row Title
+        rowIndex++;
+        addCell('', rowIndex, 1, ws);
+        addRowDataWithStartColumn(startColumnData, data[0], rowIndex, 2, ws);
+
+        // HĐ SXKD / Lưu chuyển tiền thuần từ hoạt động kinh doanh
+        rowIndex++;
+        addRow('HĐ SXKD', 'Lưu chuyển tiền thuần từ hoạt động kinh doanh', startColumnData, data, rowIndex, ws);
+        
+        // HĐ ĐT / Lưu chuyển tiền thuần từ hoạt động đầu tư
+        rowIndex++;
+        addRow('HĐ ĐT', 'Lưu chuyển tiền thuần từ hoạt động đầu tư', startColumnData, data, rowIndex, ws);
+
+        // HĐ TC / Lưu chuyển tiền thuần từ hoạt động tài chính
+        rowIndex++;
+        addRow('HĐ TC', 'Lưu chuyển tiền thuần từ hoạt động tài chính', startColumnData, data, rowIndex, ws);
+
+        // Thuần / Lưu chuyển tiền thuần trong kỳ
+        rowIndex++;
+        addRow('Thuần', 'Lưu chuyển tiền thuần trong kỳ', startColumnData, data, rowIndex, ws);
+
+        console.log('Add data to sheet ' + sheetName + ' successful!');
     }
 };
 

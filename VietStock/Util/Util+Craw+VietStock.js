@@ -4,6 +4,9 @@ const cheerio = require('cheerio');
 function combineData(oldData, data, index) {
     var result = [];
     var idx = 0;
+    if (oldData.length != data.length) {
+        return oldData;
+    }
     while (idx < oldData.length) {
         var oldItem = oldData[idx];
         var newItem = data[idx];
@@ -22,8 +25,9 @@ function combineData(oldData, data, index) {
 }
 
 var util_craw_vietstock = {
-    loadCSTC: function (code, pageNumber, callback) {
-        var link = 'http://finance.vietstock.vn/Controls/Report/Data/GetReport.ashx?rptType=CSTC&scode=' + code + '&bizType=1&rptUnit=1000000&rptTermTypeID=2&page=' + pageNumber;
+    // termType = 2 => YEAR, termType = 1 => Quater
+    loadCSTC: function (code, pageNumber, termType, callback) {
+        var link = 'http://finance.vietstock.vn/Controls/Report/Data/GetReport.ashx?rptType=CSTC&scode=' + code + '&bizType=1&rptUnit=1000000&rptTermTypeID=' + termType + '&page=' + pageNumber;
         request(link, function (error, response, body) {
             if (!error && response.statusCode == 200) {
                 var $ = cheerio.load(body, {
@@ -71,8 +75,8 @@ var util_craw_vietstock = {
             }
         });
     },
-    combineLoadCSTC: function (code, pageNumber, oldData, callback) {
-        this.loadCSTC(code, pageNumber, function (data) {
+    combineLoadCSTC: function (code, pageNumber, termType, oldData, callback) {
+        this.loadCSTC(code, pageNumber, termType, function (data) {
             if (oldData.length == 0) { callback(data) }
             else {
                 var result = combineData(oldData, data, 2);
@@ -80,8 +84,9 @@ var util_craw_vietstock = {
             }
         });
     },
-    loadBCTC: function (code, pageNumber, type, callback) {
-        var link = 'http://finance.vietstock.vn/Controls/Report/Data/GetReport.ashx?rptType=' + type + '&scode=' + code + '&bizType=1&rptUnit=1000000&rptTermTypeID=2&page=' + pageNumber;
+    // termType = 1 => YEAR, termType = 2 => Quater
+    loadBCTC: function (code, pageNumber, type, termType, callback) {
+        var link = 'http://finance.vietstock.vn/Controls/Report/Data/GetReport.ashx?rptType=' + type + '&scode=' + code + '&bizType=1&rptUnit=1000000&rptTermTypeID=' + termType + '&page=' + pageNumber;
         request(link, function (error, response, body) {
             if (!error && response.statusCode == 200) {
                 var $ = cheerio.load(body, {
@@ -107,7 +112,7 @@ var util_craw_vietstock = {
 
                 data.push(item);
 
-                if (type == 'LC') {
+                if (type == 'LC1') {
                     let trs = $('table tbody').children();
                     var startCalculate = false;
                     for (const tr in trs) {
@@ -163,7 +168,7 @@ var util_craw_vietstock = {
         });
     },
     combineLoadCDKT: function (code, pageNumber, oldData, callback) {
-        this.loadBCTC(code, pageNumber, 'CDKT', function (data) {
+        this.loadBCTC(code, pageNumber, 'CDKT', 2, function (data) {
             if (oldData.length == 0) { callback(data) }
             else {
                 var result = combineData(oldData, data, 1);
@@ -172,7 +177,7 @@ var util_craw_vietstock = {
         });
     },
     combineLoadKQKD: function (code, pageNumber, oldData, callback) {
-        this.loadBCTC(code, pageNumber, 'KQKD', function (data) {
+        this.loadBCTC(code, pageNumber, 'KQKD', 2, function (data) {
             if (oldData.length == 0) { callback(data) }
             else {
                 var result = combineData(oldData, data, 1);
@@ -181,7 +186,7 @@ var util_craw_vietstock = {
         });
     },
     combineLoadLCTT: function (code, pageNumber, oldData, callback) {
-        this.loadBCTC(code, pageNumber, 'LC', function (data) {
+        this.loadBCTC(code, pageNumber, 'LC', 1, function (data) {
             if (oldData.length == 0) { callback(data) }
             else {
                 var result = combineData(oldData, data, 1);
