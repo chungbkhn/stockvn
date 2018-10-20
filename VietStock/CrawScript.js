@@ -45,6 +45,10 @@ function loadLCTT(code, pageNumber, endPageNumber, data, callback) {
     })
 }
 
+function loadPriceHistory(code, callback) {
+    util_craw_vietstock.loadPriceHistory(code, '01/01/13', '10/20/18', callback);
+}
+
 function loadPTBCTC(code) {
     var pageNumber = 1;
     var endPageNumber = 10;
@@ -70,7 +74,12 @@ function loadPTBCTC(code) {
                     data = [];
                     loadCSTC(code, pageNumber, endPageNumber, 2, data, function (dataCSTCQuater) {
                         util_excel.addDataToExcel(dataCSTCQuater, 'CSTC - Quý');
-                        util_excel.writeToFileExcel('./report/PTBCTC-' + code + '.xlsx');
+
+                        loadPriceHistory(code, function (dataPrice) {
+                            util_excel.addDataForPE(dataPrice, 'P-E');
+
+                            util_excel.writeToFileExcel('./report/PTBCTC-' + code + '.xlsx');
+                        })
                     })
                 })
             })
@@ -78,4 +87,4 @@ function loadPTBCTC(code) {
     })
 }
 
-loadPTBCTC('MSN');
+loadPTBCTC('FPT');

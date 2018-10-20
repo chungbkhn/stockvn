@@ -1,5 +1,6 @@
 var request = require('request');
 const cheerio = require('cheerio');
+var fs = require('fs');
 
 function combineData(oldData, data, index) {
     var result = [];
@@ -124,20 +125,20 @@ var util_craw_vietstock = {
                         if (startCalculate) {
                             var nameRow = tr.find('td.BR_tBody_colName').text();
 
-                        idx = 0;
-                        item = [];
-                        item[idx++] = nameRow;
+                            idx = 0;
+                            item = [];
+                            item[idx++] = nameRow;
 
-                        var values = tr.find('span.rpt_chart').first().text().split(',');
-                        for (var i in values) {
-                            let value = values[i];
-                            if (value == '_') {
-                                value = '';
+                            var values = tr.find('span.rpt_chart').first().text().split(',');
+                            for (var i in values) {
+                                let value = values[i];
+                                if (value == '_') {
+                                    value = '';
+                                }
+                                item[idx++] = value;
                             }
-                            item[idx++] = value;
-                        }
 
-                        data.push(item);
+                            data.push(item);
                         }
                     }
                 } else {
@@ -205,7 +206,7 @@ var util_craw_vietstock = {
         var endUnusedData = 0;
         for (let col = 0; col < listTitle.length; col++) {
             const item = listTitle[col];
-            if (item.length > 0) { 
+            if (item.length > 0) {
                 startUnusedData = col;
                 break;
             }
@@ -213,7 +214,7 @@ var util_craw_vietstock = {
 
         for (let col = 0; col < listTitle.length; col++) {
             const item = listTitle[col];
-            if (item.indexOf('Quý 1') > -1) { 
+            if (item.indexOf('Quý 1') > -1) {
                 endUnusedData = col;
                 break;
             }
@@ -255,22 +256,22 @@ var util_craw_vietstock = {
 
                         if (col >= 3 && listTitle[col - 3].indexOf('Quý 1') > -1) {
                             var valueQ3 = Number(oldListItem[col - 3]);
-                        if (!isNaN(valueQ3)) {
-                            value += valueQ3;
-                        }
-                            
+                            if (!isNaN(valueQ3)) {
+                                value += valueQ3;
+                            }
+
                         }
                         if (col >= 2 && listTitle[col - 2].indexOf('Quý 2') > -1) {
                             var valueQ2 = Number(oldListItem[col - 2]);
-                        if (!isNaN(valueQ2)) {
-                            value += valueQ2;
-                        }
+                            if (!isNaN(valueQ2)) {
+                                value += valueQ2;
+                            }
                         }
                         if (col >= 1 && listTitle[col - 1].indexOf('Quý 3') > -1) {
                             var valueQ1 = Number(oldListItem[col - 1]);
-                        if (!isNaN(valueQ1)) {
-                            value += valueQ1;
-                        }
+                            if (!isNaN(valueQ1)) {
+                                value += valueQ1;
+                            }
                         }
                         newListItem.push(value);
                     } else {
@@ -282,6 +283,62 @@ var util_craw_vietstock = {
         }
 
         return newData;
+    },
+    // Example: startDate = '01/01/13'   endDate = '10/20/18'
+    loadPriceHistory: function (code, startDate, endDate, callback) {
+        var link = 'http://finance.vietstock.vn/Controls/TradingResult/Matching_Hose_Result.aspx';
+
+        request.post({
+            url: link, form: {
+                scode: code,
+                lcol: 'VHTT,',
+                sort: 'Time',
+                dir: 'desc',
+                page: 1,
+                psize: 100000,
+                fdate: startDate,
+                tdate: endDate,
+                exp: 'default'
+            }
+        }
+            , (error, response, body) => {
+                if (!error && response.statusCode == 200) {
+                    var $ = cheerio.load(body, {
+                        xmlMode: true
+                    });
+
+                    // new code
+                    var data = [];
+
+                    $('td[align="center"]').each(function (i, elem) {
+                        var tr = $(this);
+                        var textValue = tr.text();
+                        if (textValue != "") {
+                            var year = Number(textValue.substr(6, 4));
+                            var month = Number(textValue.substr(3, 2));
+                            var day = Number(textValue.substr(0, 2));
+                            var dateValue = new Date(year, month, day);
+
+                            var item = [];
+                            item.push(dateValue);
+                            data.push(item);
+                        }
+                    });
+
+                    var idx = 0;
+                    $('table.Finance_Table').last().find('tbody tr').each(function (i, elem) {
+                        var tr = $(this);
+                        var textValue = tr.find('td').text().replace(",", "");
+                        var number = Number(textValue) * 1000;
+                        var item = data[idx];
+                        item.push(number);
+                        idx++;
+                    });
+                    
+                    // console.log("successed! Get: " + code + " for page: " + pageNumber);
+                    callback(data);
+                }
+            })
     }
 };
 

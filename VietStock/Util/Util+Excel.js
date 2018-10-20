@@ -23,6 +23,14 @@ var stylePercent = wb.createStyle({
     numberFormat: '#0.##%; (#0.##%); -'
 });
 
+var styleDate = wb.createStyle({
+    font: {
+        color: '#000000',
+        size: 12,
+    },
+    numberFormat: 'DD/MM/yyyy'
+});
+
 function rowIndexWithTitle(title, data) {
     for (let idx = 0; idx < data.length; idx++) {
         const rowData = data[idx];
@@ -46,9 +54,9 @@ function rowIndexConstainTitle(title, data) {
 function addRow(title, dataTitle, startColumnData, data, row, ws) {
     addCell(title, row, 1, ws);
     var dataRowIndex = rowIndexWithTitle(dataTitle, data);
-    if (dataRowIndex < 0) { 
+    if (dataRowIndex < 0) {
         console.log('Can find row with Title: ' + dataTitle);
-        return; 
+        return;
     }
     addRowDataWithStartColumn(startColumnData, data[dataRowIndex], row, 2, ws);
 }
@@ -75,8 +83,8 @@ function addRowFormula(formualaTemplate, row, startCol, numOfColumnData, ws, sty
         const columnName = xl.getExcelAlpha(idx);
         const formula = format(formualaTemplate, columnName);
         ws.cell(row, idx)
-        .formula(formula)
-        .style(style);
+            .formula(formula)
+            .style(style);
     }
 }
 
@@ -91,8 +99,8 @@ function addRowGFormula(formualaTemplate, row, startCol, numOfColumnData, ws, st
         const columnNamePrevious = xl.getExcelAlpha(idx - 5);
         const formula = format(formualaTemplate, columnName, columnNamePrevious);
         ws.cell(row, idx)
-        .formula(formula)
-        .style(style);
+            .formula(formula)
+            .style(style);
     }
 }
 
@@ -197,7 +205,7 @@ var util_excel = {
         // Số lượng CP
         rowIndex++;
         addCell('Số lượng CP', rowIndex, 1, ws);
-        addRowFormula('{0}6*100',rowIndex, 2, numOfColumnData, ws);
+        addRowFormula('{0}6*100', rowIndex, 2, numOfColumnData, ws);
 
         // Nợ phải trả / A. NỢ PHẢI TRẢ
         rowIndex++;
@@ -210,12 +218,12 @@ var util_excel = {
         // Tổng tài sản
         rowIndex++;
         addCell('Tổng tài sản', rowIndex, 1, ws);
-        addRowFormula('{0}6+{0}8',rowIndex, 2, numOfColumnData, ws);
+        addRowFormula('{0}6+{0}8', rowIndex, 2, numOfColumnData, ws);
 
         // Chiếm dụng vốn
         rowIndex++;
         addCell('Chiếm dụng vốn', rowIndex, 1, ws);
-        addRowFormula('{0}8-{0}9',rowIndex, 2, numOfColumnData, ws);
+        addRowFormula('{0}8-{0}9', rowIndex, 2, numOfColumnData, ws);
 
         // Bị chiếm dụng vốn = (Các khoản phải thu ngắn hạn) + (Các khoản phải thu dài hạn)
         rowIndex++;
@@ -224,17 +232,17 @@ var util_excel = {
         // Tổng nợ/Tổng TS
         rowIndex++;
         addCell('Tổng nợ/Tổng TS', rowIndex, 1, ws);
-        addRowFormula('{0}8/{0}10',rowIndex, 2, numOfColumnData, ws, stylePercent);
+        addRowFormula('{0}8/{0}10', rowIndex, 2, numOfColumnData, ws, stylePercent);
 
         // Nợ vay/VCSH
         rowIndex++;
         addCell('Nợ vay/VCSH', rowIndex, 1, ws);
-        addRowFormula('{0}9/{0}6',rowIndex, 2, numOfColumnData, ws, stylePercent);
+        addRowFormula('{0}9/{0}6', rowIndex, 2, numOfColumnData, ws, stylePercent);
 
         // Tỉ lệ chiếm dụng vốn
         rowIndex++;
         addCell('Tỉ lệ chiếm dụng vốn', rowIndex, 1, ws);
-        addRowFormula('{0}11/{0}12',rowIndex, 2, numOfColumnData, ws, stylePercent);
+        addRowFormula('{0}11/{0}12', rowIndex, 2, numOfColumnData, ws, stylePercent);
 
         // Cổ tức
         rowIndex++;
@@ -278,7 +286,7 @@ var util_excel = {
         // DT thuần / 3. Doanh thu thuần về bán hàng và cung cấp dịch vụ
         rowIndex++;
         addRow('DT thuần', '3. Doanh thu thuần về bán hàng và cung cấp dịch vụ', startColumnData, data, rowIndex, ws);
-        
+
         // LNG / 5. Lợi nhuận gộp về bán hàng và cung cấp dịch vụ
         rowIndex++;
         addRow('LNG', '5. Lợi nhuận gộp về bán hàng và cung cấp dịch vụ', startColumnData, data, rowIndex, ws);
@@ -302,32 +310,32 @@ var util_excel = {
         // Biên LNG
         rowIndex++;
         addCell('Biên LNG', rowIndex, 1, ws);
-        addRowFormula('{0}7/{0}6',rowIndex, 2, numOfColumnData, ws, stylePercent);
+        addRowFormula('{0}7/{0}6', rowIndex, 2, numOfColumnData, ws, stylePercent);
 
         // Biên LNR
         rowIndex++;
         addCell('Biên LNR', rowIndex, 1, ws);
-        addRowFormula('{0}8/{0}6',rowIndex, 2, numOfColumnData, ws, stylePercent);
+        addRowFormula('{0}8/{0}6', rowIndex, 2, numOfColumnData, ws, stylePercent);
 
         // ROE
         rowIndex++;
         addCell('ROE', rowIndex, 1, ws);
-        addRowGFormula('{0}8/\'SKTC\'!{1}6',rowIndex, 2, numOfColumnData, ws, stylePercent);
+        addRowGFormula('{0}8/\'SKTC\'!{1}6', rowIndex, 2, numOfColumnData, ws, stylePercent);
 
         // G DT
         rowIndex++;
         addCell('G DT', rowIndex, 1, ws);
-        addRowGFormula('{0}6/{1}6 - 1',rowIndex, 2, numOfColumnData, ws, stylePercent);
+        addRowGFormula('{0}6/{1}6 - 1', rowIndex, 2, numOfColumnData, ws, stylePercent);
 
         // G LNG
         rowIndex++;
         addCell('G LNG', rowIndex, 1, ws);
-        addRowGFormula('{0}7/{1}7 - 1',rowIndex, 2, numOfColumnData, ws, stylePercent);
+        addRowGFormula('{0}7/{1}7 - 1', rowIndex, 2, numOfColumnData, ws, stylePercent);
 
         // G LNR
         rowIndex++;
         addCell('G LNR', rowIndex, 1, ws);
-        addRowGFormula('{0}8/{1}8 - 1',rowIndex, 2, numOfColumnData, ws, stylePercent);
+        addRowGFormula('{0}8/{1}8 - 1', rowIndex, 2, numOfColumnData, ws, stylePercent);
 
         console.log('Add data to sheet ' + sheetName + ' successful!');
     },
@@ -367,7 +375,7 @@ var util_excel = {
         // HĐ SXKD / Lưu chuyển tiền thuần từ hoạt động kinh doanh
         rowIndex++;
         addRow('HĐ SXKD', 'Lưu chuyển tiền thuần từ hoạt động kinh doanh', startColumnData, data, rowIndex, ws);
-        
+
         // HĐ ĐT / Lưu chuyển tiền thuần từ hoạt động đầu tư
         rowIndex++;
         addRow('HĐ ĐT', 'Lưu chuyển tiền thuần từ hoạt động đầu tư', startColumnData, data, rowIndex, ws);
@@ -379,6 +387,86 @@ var util_excel = {
         // Thuần / Lưu chuyển tiền thuần trong kỳ
         rowIndex++;
         addRow('Thuần', 'Lưu chuyển tiền thuần trong kỳ', startColumnData, data, rowIndex, ws);
+
+        console.log('Add data to sheet ' + sheetName + ' successful!');
+    },
+    addDataForPE: function (data, sheetName) {
+        if (data.length == 0) { return; }
+
+        var ws = wb.addWorksheet(sheetName);
+        var rowIndex = 1;
+        var colIndex = 1;
+        var startRowData = 0;
+        ws.cell(rowIndex++, colIndex)   // Write to cell A1
+            .string('P/E tổng hợp')
+            .style(styleNumber);
+
+        ws.cell(rowIndex, colIndex++)   // Write to cell A2
+            .string('Ngày')
+            .style(styleNumber);
+
+        ws.cell(rowIndex, colIndex++)   // Write to cell B2
+            .string('Năm')
+            .style(styleNumber);
+
+        ws.cell(rowIndex, colIndex++)   // Write to cell C2
+            .string('VHTT')
+            .style(styleNumber);
+
+        ws.cell(rowIndex, colIndex++)   // Write to cell C2
+            .string('LNST')
+            .style(styleNumber);
+
+        ws.cell(rowIndex, colIndex++)   // Write to cell C2
+            .string('P/E')
+            .style(styleNumber);
+
+        ws.cell(rowIndex, colIndex++)   // Write to cell C2
+            .string('Bottom')
+            .style(styleNumber);
+
+        ws.cell(rowIndex, colIndex++)   // Write to cell C2
+            .string('Top')
+            .style(styleNumber);
+
+        ws.cell(rowIndex, colIndex++)   // Write to cell C2
+            .string('AVG')
+            .style(styleNumber);
+
+            startRowData = rowIndex + 1;
+        // Write Row Title
+        for (let idx = 0; idx < data.length; idx++) {
+            const item = data[idx];
+
+            rowIndex++;
+            colIndex = 1;
+            ws.cell(rowIndex, colIndex++)
+                .date(item[0])
+                .style(styleDate);
+
+                // const columnName = xl.getExcelAlpha(idx);
+                ws.cell(rowIndex, colIndex++)
+                .string('Năm ' + item[0].getFullYear())
+                .style(styleNumber);
+
+                ws.cell(rowIndex, colIndex++)
+                .number(item[1])
+                .style(styleNumber);
+
+                // hard code LNST
+                ws.cell(rowIndex, colIndex++)
+                .number(1)
+                .style(styleNumber);
+
+                const columnVHTT = xl.getExcelAlpha(colIndex - 2);
+                const columnLNST = xl.getExcelAlpha(colIndex - 1);
+                ws.cell(rowIndex, colIndex++)
+                .formula(columnVHTT + rowIndex + '/' + columnLNST + rowIndex)
+                .style(styleNumber);
+
+                const columnPE = xl.getExcelAlpha(colIndex - 1);
+
+        }
 
         console.log('Add data to sheet ' + sheetName + ' successful!');
     }
