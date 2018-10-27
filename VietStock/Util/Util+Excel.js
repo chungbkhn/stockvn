@@ -15,6 +15,14 @@ var styleNumber = wb.createStyle({
     numberFormat: '#,##; (#,##); -',
 });
 
+var styleDecimal = wb.createStyle({
+    font: {
+        color: '#000000',
+        size: 12,
+    },
+    numberFormat: '#,###.##; (#,###.##); -',
+});
+
 var stylePercent = wb.createStyle({
     font: {
         color: '#000000',
@@ -528,38 +536,38 @@ var util_excel = {
             const columnLNST = xl.getExcelAlpha(colIndex - 1);
             ws.cell(rowIndex, colIndex++)
                 .formula(columnVHTT + rowIndex + '/' + columnLNST + rowIndex)
-                .style(styleNumber);
+                .style(styleDecimal);
 
             rowIndex++;
         }
         endRowData = rowIndex - 1;
         ws.cell(2, 2)
             .formula('STDEV($E$' + startRowData + ':$E$' + endRowData + ')')
-            .style(styleNumber);
+            .style(styleDecimal);
         ws.cell(3, 2)
             .formula('AVERAGE($E$' + startRowData + ':$E$' + endRowData + ')')
-            .style(styleNumber);
+            .style(styleDecimal);
 
             ws.cell(startRowData, 6)
             .formula('$B$3-$B$2')
-            .style(styleNumber);
+            .style(styleDecimal);
             ws.cell(endRowData, 6)
             .formula('$B$3-$B$2')
-            .style(styleNumber);
+            .style(styleDecimal);
 
             ws.cell(startRowData, 7)
             .formula('$B$3+$B$2')
-            .style(styleNumber);
+            .style(styleDecimal);
             ws.cell(endRowData, 7)
             .formula('$B$3+$B$2')
-            .style(styleNumber);
+            .style(styleDecimal);
 
             ws.cell(startRowData, 8)
             .formula('$B$3')
-            .style(styleNumber);
+            .style(styleDecimal);
             ws.cell(endRowData, 8)
             .formula('$B$3')
-            .style(styleNumber);
+            .style(styleDecimal);
 
         console.log('Add data to sheet ' + sheetName + ' successful!');
     },
