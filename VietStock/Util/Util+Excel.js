@@ -130,6 +130,58 @@ function addCell(value, row, col, ws) {
     }
 }
 
+function addDLTC_KQKD(ws, quater, row, isYear, referenceSheetName, listRowTitles) {
+    var rowIndex = row;
+    var colIndex = 1;
+
+    var title = 'Quý ' + quater;
+    if (isYear) {
+        title = 'Cả Năm'
+    }
+    ws.cell(rowIndex++, colIndex)   // Write to cell C2
+        .string(title)
+        .style(styleNumber);
+
+    var startRow = rowIndex;
+    ws.cell(rowIndex++, colIndex)   // Write to cell A5
+        .string('Tên chỉ số')
+        .style(styleNumber);
+
+    for (let idx = 0; idx < listRowTitles.length; idx++) {
+        const rowTitle = listRowTitles[idx][0];
+        ws.cell(rowIndex++, colIndex)   // Write to cell A6
+            .string(rowTitle)
+            .style(styleNumber);
+    }
+
+    rowIndex = startRow;
+
+    for (let addRowIndex = 0; addRowIndex < listRowTitles.length + 1; addRowIndex++) {
+        colIndex = 2;
+        for (let idx = 2013; idx < 2031; idx++) {
+            if (addRowIndex == 0) {
+                var headerTitle = 'Quý ' + quater + '/' + idx;
+                if (isYear) {
+                    headerTitle = 'Năm ' + idx
+                }
+                ws.cell(rowIndex, colIndex++)
+                    .string(headerTitle)
+                    .style(styleNumber);
+            } else {
+                const rowStyle = listRowTitles[addRowIndex - 1][1];
+                const columnName = xl.getExcelAlpha(colIndex);
+                ws.cell(rowIndex, colIndex++)
+                    .formula('VLOOKUP($A' + rowIndex + ',' + referenceSheetName + '!$A$5:$BW$20,MATCH(' + columnName + '$' + startRow + ',' + referenceSheetName + '!$A$5:$BW$5,0),FALSE)')
+                    .style(rowStyle);
+            }
+        }
+        rowIndex++;
+    }
+
+    rowIndex++;
+    return rowIndex;
+}
+
 var util_excel = {
     writeToFileExcel: function (name) {
         wb.write(name);
@@ -165,9 +217,10 @@ var util_excel = {
 
         console.log('Add data to sheet ' + sheetName + ' successful!');
     },
-    addDataForPTCDKT: function (data, sheetName) {
+    addDataForPTCDKT: function (data) {
         if (data.length == 0) { return; }
 
+        const sheetName = 'SKTC';
         var ws = wb.addWorksheet(sheetName);
         var rowIndex = 1;
         ws.cell(rowIndex++, 1)   // Write to cell A1
@@ -250,9 +303,10 @@ var util_excel = {
 
         console.log('Add data to sheet ' + sheetName + ' successful!');
     },
-    addDataForPTKQKD: function (data, sheetName) {
+    addDataForPTKQKD: function (data) {
         if (data.length == 0) { return; }
 
+        const sheetName = 'KQKD';
         var ws = wb.addWorksheet(sheetName);
         var rowIndex = 1;
         ws.cell(rowIndex++, 1)   // Write to cell A1
@@ -339,9 +393,10 @@ var util_excel = {
 
         console.log('Add data to sheet ' + sheetName + ' successful!');
     },
-    addDataForPTLCTT: function (data, sheetName) {
+    addDataForPTLCTT: function (data) {
         if (data.length == 0) { return; }
 
+        const sheetName = 'LCTT';
         var ws = wb.addWorksheet(sheetName);
         var rowIndex = 1;
         ws.cell(rowIndex++, 1)   // Write to cell A1
@@ -390,15 +445,25 @@ var util_excel = {
 
         console.log('Add data to sheet ' + sheetName + ' successful!');
     },
-    addDataForPE: function (data, sheetName) {
+    addDataForPE: function (data) {
+        const sheetName = 'P-E';
         if (data.length == 0) { return; }
 
         var ws = wb.addWorksheet(sheetName);
         var rowIndex = 1;
         var colIndex = 1;
         var startRowData = 0;
+        var endRowData = 0;
         ws.cell(rowIndex++, colIndex)   // Write to cell A1
             .string('P/E tổng hợp')
+            .style(styleNumber);
+
+        ws.cell(rowIndex++, colIndex)
+            .string('Std Dev P/E')
+            .style(styleNumber);
+
+        ws.cell(rowIndex++, colIndex)
+            .string('AVG P/E')
             .style(styleNumber);
 
         ws.cell(rowIndex, colIndex++)   // Write to cell A2
@@ -433,40 +498,124 @@ var util_excel = {
             .string('AVG')
             .style(styleNumber);
 
-            startRowData = rowIndex + 1;
+        rowIndex++;
+        startRowData = rowIndex;
+        const headerRow = rowIndex - 1;
         // Write Row Title
         for (let idx = 0; idx < data.length; idx++) {
             const item = data[idx];
 
-            rowIndex++;
             colIndex = 1;
             ws.cell(rowIndex, colIndex++)
                 .date(item[0])
                 .style(styleDate);
 
-                // const columnName = xl.getExcelAlpha(idx);
-                ws.cell(rowIndex, colIndex++)
+            // const columnName = xl.getExcelAlpha(idx);
+            ws.cell(rowIndex, colIndex++)
                 .string('Năm ' + item[0].getFullYear())
                 .style(styleNumber);
 
-                ws.cell(rowIndex, colIndex++)
+            ws.cell(rowIndex, colIndex++)
                 .number(item[1])
                 .style(styleNumber);
 
-                // hard code LNST
-                ws.cell(rowIndex, colIndex++)
-                .number(1)
+            // LNST
+            ws.cell(rowIndex, colIndex++)
+                .formula('VLOOKUP($D$' + headerRow + ',KQKD!$A$5:$BW$20,MATCH(B' + rowIndex + ',KQKD!$A$5:$BW$5,0),FALSE)')
                 .style(styleNumber);
 
-                const columnVHTT = xl.getExcelAlpha(colIndex - 2);
-                const columnLNST = xl.getExcelAlpha(colIndex - 1);
-                ws.cell(rowIndex, colIndex++)
+            const columnVHTT = xl.getExcelAlpha(colIndex - 2);
+            const columnLNST = xl.getExcelAlpha(colIndex - 1);
+            ws.cell(rowIndex, colIndex++)
                 .formula(columnVHTT + rowIndex + '/' + columnLNST + rowIndex)
                 .style(styleNumber);
 
-                const columnPE = xl.getExcelAlpha(colIndex - 1);
-
+            rowIndex++;
         }
+        endRowData = rowIndex - 1;
+        ws.cell(2, 2)
+            .formula('STDEV($E$' + startRowData + ':$E$' + endRowData + ')')
+            .style(styleNumber);
+        ws.cell(3, 2)
+            .formula('AVERAGE($E$' + startRowData + ':$E$' + endRowData + ')')
+            .style(styleNumber);
+
+            ws.cell(startRowData, 6)
+            .formula('$B$3-$B$2')
+            .style(styleNumber);
+            ws.cell(endRowData, 6)
+            .formula('$B$3-$B$2')
+            .style(styleNumber);
+
+            ws.cell(startRowData, 7)
+            .formula('$B$3+$B$2')
+            .style(styleNumber);
+            ws.cell(endRowData, 7)
+            .formula('$B$3+$B$2')
+            .style(styleNumber);
+
+            ws.cell(startRowData, 8)
+            .formula('$B$3')
+            .style(styleNumber);
+            ws.cell(endRowData, 8)
+            .formula('$B$3')
+            .style(styleNumber);
+
+        console.log('Add data to sheet ' + sheetName + ' successful!');
+    },
+    addDataForDLDT: function () {
+        const sheetName = 'Dữ liệu đồ thị'
+        var ws = wb.addWorksheet(sheetName);
+        var rowIndex = 1;
+        var colIndex = 1;
+        ws.cell(rowIndex++, colIndex)   // Write to cell A1
+            .string('Tổng hợp dữ liệu PT BCTC')
+            .style(styleNumber);
+
+        rowIndex++;
+        ws.cell(rowIndex++, colIndex)   // Write to cell A3
+            .string('Sức khoẻ tài chính')
+            .style(styleNumber);
+
+        rowIndex++;
+        var listRowTitles = [['Tổng nợ/Tổng TS', stylePercent], ['Nợ vay/VCSH', stylePercent], ['Tỉ lệ chiếm dụng vốn', stylePercent]];
+        var referenceSheetName = 'SKTC';
+        rowIndex = addDLTC_KQKD(ws, '', rowIndex, true, referenceSheetName, listRowTitles);
+
+        colIndex = 1;
+        rowIndex = 15;
+        var startRowPanel = rowIndex;
+        const stepRowPanel = 15;
+        ws.cell(rowIndex++, colIndex)   // Write to cell C2
+            .string('Kết quả kinh doanh')
+            .style(styleNumber);
+
+        rowIndex++
+        listRowTitles = [['DT thuần', styleNumber], ['LNG', styleNumber], ['EPS', styleNumber], ['Biên LNG', stylePercent], ['ROE', stylePercent], ['Biên LNR', stylePercent]];
+        referenceSheetName = 'KQKD';
+        rowIndex = addDLTC_KQKD(ws, '1', rowIndex, false, referenceSheetName, listRowTitles);
+
+        rowIndex = startRowPanel + stepRowPanel * 1;
+        rowIndex = addDLTC_KQKD(ws, '2', rowIndex, false, referenceSheetName, listRowTitles);
+
+        rowIndex = startRowPanel + stepRowPanel * 2;
+        rowIndex = addDLTC_KQKD(ws, '3', rowIndex, false, referenceSheetName, listRowTitles);
+
+        rowIndex = startRowPanel + stepRowPanel * 3;
+        rowIndex = addDLTC_KQKD(ws, '4', rowIndex, false, referenceSheetName, listRowTitles);
+
+        rowIndex = startRowPanel + stepRowPanel * 4;
+        rowIndex = addDLTC_KQKD(ws, '', rowIndex, true, referenceSheetName, listRowTitles);
+
+        rowIndex = startRowPanel + stepRowPanel * 5;
+        ws.cell(rowIndex++, colIndex)   // Write to cell C2
+            .string('Dòng tiền')
+            .style(styleNumber);
+
+        rowIndex++
+        listRowTitles = [['HĐ SXKD', styleNumber], ['HĐ ĐT', styleNumber], ['HĐ TC', styleNumber], ['Thuần', styleNumber]];
+        referenceSheetName = 'LCTT';
+        rowIndex = addDLTC_KQKD(ws, '', rowIndex, true, referenceSheetName, listRowTitles);
 
         console.log('Add data to sheet ' + sheetName + ' successful!');
     }

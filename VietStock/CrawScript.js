@@ -56,18 +56,15 @@ function loadPTBCTC(code) {
 
     loadCDKT(code, pageNumber, endPageNumber, data, function (dataCDKT) {
         const calculateDataCDKT = util_craw_vietstock.calculateData(dataCDKT, false);
-        // util_excel.addDataToExcel(calculateDataCDKT, 'CDKT');
-        util_excel.addDataForPTCDKT(calculateDataCDKT, 'SKTC');
+        util_excel.addDataForPTCDKT(calculateDataCDKT);
         data = [];
         loadKQKD(code, pageNumber, endPageNumber, data, function (dataKQKD) {
             const calculateDataKQKD = util_craw_vietstock.calculateData(dataKQKD, true);
-            // util_excel.addDataToExcel(calculateDataKQKD, 'KQKD');
-            util_excel.addDataForPTKQKD(calculateDataKQKD, 'KQKD');
+            util_excel.addDataForPTKQKD(calculateDataKQKD);
             data = [];
             loadLCTT(code, pageNumber, endPageNumber, data, function (dataLCTT) {
                 const calculateDataLCTT = util_craw_vietstock.calculateData(dataLCTT, false);
-                // util_excel.addDataToExcel(calculateDataLCTT, 'LCTT');
-                util_excel.addDataForPTLCTT(calculateDataLCTT, 'LCTT');
+                util_excel.addDataForPTLCTT(calculateDataLCTT);
                 data = [];
                 loadCSTC(code, pageNumber, endPageNumber, 1, data, function (dataCSTCYear) {
                     util_excel.addDataToExcel(dataCSTCYear, 'CSTC - Năm');
@@ -76,7 +73,8 @@ function loadPTBCTC(code) {
                         util_excel.addDataToExcel(dataCSTCQuater, 'CSTC - Quý');
 
                         loadPriceHistory(code, function (dataPrice) {
-                            util_excel.addDataForPE(dataPrice, 'P-E');
+                            util_excel.addDataForPE(dataPrice);
+                            util_excel.addDataForDLDT();
 
                             util_excel.writeToFileExcel('./report/PTBCTC-' + code + '.xlsx');
                         })
@@ -87,4 +85,4 @@ function loadPTBCTC(code) {
     })
 }
 
-loadPTBCTC('FPT');
+loadPTBCTC('HPG');

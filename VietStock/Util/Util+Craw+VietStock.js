@@ -336,6 +336,7 @@ var util_craw_vietstock = {
                     });
                     
                     // console.log("successed! Get: " + code + " for page: " + pageNumber);
+                    data.reverse();
                     callback(data);
                 }
             })
